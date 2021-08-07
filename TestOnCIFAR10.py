@@ -88,8 +88,7 @@ def main():
         lr = 0.001
       optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9, nesterov=True, weight_decay=1e-4)
       train(net, device, optimizer, train_loader, epoch, lossF)
-      if epoch%10==0:
-        test(net, device, test_loader, lossF)
+    test(net, device, test_loader, lossF)
 
   torch.save(net.state_dict(), 'CIFAR_Model.pth')
   print("   Model saved to CIFAR_Model.pth")
