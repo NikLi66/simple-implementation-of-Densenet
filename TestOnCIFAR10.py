@@ -39,7 +39,7 @@ def train(model, device, optimizer, train_loader, epoch, lossF):
   print('epoch {0} total_correct: {1} loss: {2:.2f} acc: {3:.2f}'.format(
           epoch,total_correct, total_loss, model_accuracy) )
         
-def test(model, device, test_loader,lossF):
+def test(model, device, test_loader, modal):
   model.eval()
   total = 0
   correct = 0
@@ -53,21 +53,28 @@ def test(model, device, test_loader,lossF):
       total += labels.size(0)
     
     model_accuracy = correct / total * 100
-    print('      Accuracy on {0} test images: {1:.2f}%'.format(
+    if modal == 'val':
+      print('      Accuracy on {0} validation images: {1:.2f}%'.format(
+                                total, model_accuracy))
+    else:
+      print('      Accuracy on {0} test images: {1:.2f}%'.format(
                                 total, model_accuracy))
 
 
 def main():
-  loss_values = []
-  acc = []
+  train_val_split = 0.1
 
   # command-line arguments
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 
   # fetch and load training data
-  trainset = datasets.CIFAR10(root='./data', train=True, download=True, transform=DenseNet.transform('train'))
+  dataset = datasets.CIFAR10(root='./data', train=True, download=True, transform=DenseNet.transform('train'))
+  datasize = len(dataset)
+  trainsize, valsize = int((1 - train_val_split)*datasize), int(train_val_split*datasize)
+  trainset, valset = torch.utils.data.random_split(dataset, [trainsize, valsize])
   train_loader = torch.utils.data.DataLoader(trainset, batch_size=DenseNet.batch_size, shuffle=False)
+  valid_loader = torch.utils.data.DataLoader(valset, batch_size=DenseNet.batch_size, shuffle=False)
 
   # fetch and load test data
   testset = datasets.CIFAR10(root='./data', train=False, download=True, transform=DenseNet.transform('test'))
@@ -88,12 +95,14 @@ def main():
         lr = 0.001
       optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9, nesterov=True, weight_decay=1e-4)
       train(net, device, optimizer, train_loader, epoch, lossF)
-    test(net, device, test_loader, lossF)
+
+      if epoch%10==0:
+        test(net, device, valid_loader, 'val')
+        
+  test(net, device, test_loader, 'test')
 
   torch.save(net.state_dict(), 'CIFAR_Model.pth')
   print("   Model saved to CIFAR_Model.pth")
-  print(acc)
-  print(loss_values)
   
 if __name__ == '__main__':
   main()
