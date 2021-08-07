@@ -16,7 +16,7 @@ Furthermore, the following papers also help me on training model and selecting h
 
 # Training details
 
-The architecture of my model consists of 3 blocks, size of each is 16(i.e L=100). I do not apply heavy transformations excepts horizontal flip. I normalize the input by mean=(0.4914, 0.4822, 0.4465),std=(0.2023, 0.1994, 0.2010) which are common mean-std values used in CIFAR-10.
+The architecture of my model consists of 3 blocks with grow rate 12, size of each is 16(i.e L=100). I do not apply heavy transformations excepts horizontal flip. I normalize the input by mean=(0.4914, 0.4822, 0.4465),std=(0.2023, 0.1994, 0.2010) which are common mean-std values used in CIFAR-10.
 
 The optimizer selected is SGD with 0.9 Nesterov momentum and 1e-4 weight decay. The initial learning rate is 0.1 and divided by 10 at 50% and 75% of total epochs, respectively. Dropout is provided after each convolutional layer except the first one. However, the idea comes from [Data augmentation instead of explicit regularization](https://arxiv.org/abs/1806.03852) demonstrates that data augmentation is better than regularizations especially on smaller dataset. I would like to reappear this in the further works.
 
