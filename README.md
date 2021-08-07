@@ -1,12 +1,10 @@
 # A Simple Implementation of DenseNet in Pytorch
 
-This project is a homework of course COMP9444, UNSW. The main.py file and dataset are given by [Alan Blair](https://www.cse.unsw.edu.au/~blair/). The model I selected is DenseNet-169.
-
 DenseNet is one of the popular CNNs on image classification tasks. This project is a private practice on building a DenseNet following the paper:
 
 [Densely Connected Convolutional Networks](https://arxiv.org/abs/1608.06993)
 
-I test my model on the supplementary  
+I test my model on CIFAR-10, which is one of the most famous image dataset.
 
 Furthermore, the following papers also help me on training model and selecting hyperparameters:
 
@@ -16,16 +14,19 @@ Furthermore, the following papers also help me on training model and selecting h
 
 # Training details
 
-The architecture of my model is referred to DenseNet-169. There are four dense blocks and size of each is 6,12,24,16. The grow rate is 24. I apply heavy transformations including horizontal flip, rotation(from -45 to 45 degree), color jitter and random crop. I normalize the input by mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225] which are common mean-std values from ImageNet.
+The architecture of my model consists of 3 blocks, size of each is 16(i.e L=100). I do not apply heavy transformations excepts horizontal flip. I normalize the input by mean=(0.4914, 0.4822, 0.4465),std=(0.2023, 0.1994, 0.2010) which are common mean-std values used in CIFAR-10.
 
-The optimizer selected is SGD with 0.9 Nesterov momentum and 1e-4 weight decay. The learning rate is 0.01, although changing learning rate at different proportions of total epochs might obtain a better performance. I do not provide Dropout in my model since the dataset is not large. This idea comes from the research result of [Data augmentation instead of explicit regularization](https://arxiv.org/abs/1806.03852), data augmentation is better than regularizations especially on smaller dataset. I would like to reappear this in the further works.
+The optimizer selected is SGD with 0.9 Nesterov momentum and 1e-4 weight decay. The initial learning rate is 0.1 and divided by 10 at 50% and 75% of total epochs, respectively. Dropout is provided after each convolutional layer except the first one. However, the idea comes from [Data augmentation instead of explicit regularization](https://arxiv.org/abs/1806.03852) demonstrates that data augmentation is better than regularizations especially on smaller dataset. I would like to reappear this in the further works.
 
-For time efficiency, the total epochs are 200 (300 in the original paper) and the batch size is 64. Some researchers demonstrate that too large of batch size will lead to poor generalization. The size of validation set is 0.2 of the whole training set.
+The total epochs are 300 (300 in the original paper) and the batch size is 64. Some researchers demonstrate that too large of batch size will lead to poor generalization.
 
-# Description of Dataset
+All of my selections of hyperparameters are following the implementation details from [Densely Connected Convolutional Networks](https://arxiv.org/abs/1608.06993). This project aims to reappear the similar result.
 
-This dataset is given by my lecturer [Alan Blair](https://www.cse.unsw.edu.au/~blair/). But I believe there is an original source for this dataset online. The task is to classify the different characters in cartoon Simpson Family. There are 14 characters in the dataset. The size of input image is 64 by 64. The number of channel is 3 although the images look like grayscale images.
+# Environment and Result
 
-# Result
+I run my model on CUDA. The version of torch is 1.8.1 and torchvision is 0.9.1.
 
-The accuracy on validation set could reach around 96%. The accuracy test on selected 700 test samples is 97.14%.
+The accuracy on training set could finally reach around 96%. The accuracy test on selected 700 test samples is 97.14%.
+
+# Discussion
+My implemention still have many issues. The input channel of linear layer(i.e classifier) could not be calculated automatically. This requires setting the size of input image as a parameter of my model and calculate the input channel of classifier by the number of dense blocks. Furthermore, the output channel of the first conv layer is default by double grow rate. This should be set as a parameter of DenseNet model.
