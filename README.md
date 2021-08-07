@@ -1,8 +1,10 @@
 # A Simple Implementation of DenseNet in Pytorch
 
-DenseNet is one of the popular CNNs on image classification tasks. This project is a private practice on building a DenseNet following the paper:
+DenseNet is one of the popular CNNs on image classification tasks. More details could be found in the following the paper:
 
 [Densely Connected Convolutional Networks](https://arxiv.org/abs/1608.06993)
+
+This project is a personal practice on building a DenseNet. My code is simply readable for Deep Learning or Computer Vision rookies. Higher level implementation of DenseNet could be found in [This github project](https://github.com/liuzhuang13/DenseNet) implemented by the author of [Densely Connected Convolutional Networks](https://arxiv.org/abs/1608.06993), or the [Source Code for DenseNet in Pytorch](https://pytorch.org/vision/0.8/_modules/torchvision/models/densenet.html). 
 
 I test my model on CIFAR-10, which is one of the most famous image dataset.
 
