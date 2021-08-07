@@ -127,5 +127,5 @@ net = Network()
 lossFunc = nn.CrossEntropyLoss()
 
 batch_size = 64
-epochs = 300
+epochs = 150
 
