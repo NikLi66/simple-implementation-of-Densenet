@@ -20,7 +20,7 @@ The architecture of my model consists of 3 blocks, size of each is 16(i.e L=100)
 
 The optimizer selected is SGD with 0.9 Nesterov momentum and 1e-4 weight decay. The initial learning rate is 0.1 and divided by 10 at 50% and 75% of total epochs, respectively. Dropout is provided after each convolutional layer except the first one. However, the idea comes from [Data augmentation instead of explicit regularization](https://arxiv.org/abs/1806.03852) demonstrates that data augmentation is better than regularizations especially on smaller dataset. I would like to reappear this in the further works.
 
-The total epochs are 300 (300 in the original paper) and the batch size is 64. Some researchers demonstrate that too large of batch size will lead to poor generalization.
+The total epochs are 300 (300 in the original paper) and the batch size is 64. Some researchers demonstrate that too large of batch size will lead to poor generalization. Validation set consists of 5000 training samples randomly selected.
 
 All of my selections of hyperparameters are following the implementation details from [Densely Connected Convolutional Networks](https://arxiv.org/abs/1608.06993). This project aims to reappear the similar result.
 
