@@ -24,7 +24,7 @@ All of my selections of hyperparameters are following the implementation details
 
 # Environment and Result
 
-I run my model on CUDA. The version of torch is 1.8.1 and torchvision is 0.9.1.
+My model is excuted on CUDA. The version of torch is 1.8.1 and torchvision is 0.9.1.
 
 The accuracy on training set could finally reach around 96%. The accuracy test on selected 700 test samples is 97.14%.
 
