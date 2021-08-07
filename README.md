@@ -29,4 +29,4 @@ My model is excuted on CUDA. The version of torch is 1.8.1 and torchvision is 0.
 The accuracy on training set could finally reach around 96%. The accuracy test on selected 700 test samples is 97.14%.
 
 # Discussion
-My implemention still have many issues. The input channel of linear layer(i.e classifier) could not be calculated automatically. This requires setting the size of input image as a parameter of my model and calculate the input channel of classifier by the number of dense blocks. Furthermore, the output channel of the first conv layer is default by double grow rate. This should be set as a parameter of DenseNet model.
+My implemention still have many issues. The input channel of linear layer(i.e classifier) could not be calculated automatically. This requires setting the size of input image as a parameter of my model and calculate the input channel of classifier in terms of the number of dense blocks. Furthermore, the output channel of the first conv layer is default by double grow rate. This should be set as a parameter of DenseNet model.
