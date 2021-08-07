@@ -9,17 +9,6 @@ import torch.nn.functional as F
 import numpy as np
 import sklearn.metrics as metrics
 from torchvision import datasets, transforms
-#python3
-
-from __future__ import print_function
-import argparse
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import numpy as np
-import sklearn.metrics as metrics
-from torchvision import datasets, transforms
 import DenseNet
 import sys 
 
