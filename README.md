@@ -20,7 +20,7 @@ The architecture of my model consists of 3 blocks with grow rate 12, size of eac
 
 The optimizer selected is SGD with 0.9 Nesterov momentum and 1e-4 weight decay. The initial learning rate is 0.1 and divided by 10 at 50% and 75% of total epochs, respectively. Dropout is provided after each convolutional layer except the first one. However, the idea comes from [Data augmentation instead of explicit regularization](https://arxiv.org/abs/1806.03852) demonstrates that data augmentation is better than regularizations especially on smaller dataset. I would like to reappear this in the further works.
 
-The total epochs are 300 (300 in the original paper) and the batch size is 64. Some researchers demonstrate that too large of batch size will lead to poor generalization. Validation set consists of 5000 training samples randomly selected.
+For time efficiency, the total epochs are 150 (300 in the original paper) and the batch size is 64. Some researchers demonstrate that too large of batch size will lead to poor generalization. Validation set consists of 5000 training samples randomly selected.
 
 All of my selections of hyperparameters are following the implementation details from [Densely Connected Convolutional Networks](https://arxiv.org/abs/1608.06993). This project aims to reappear the similar result.
 
@@ -28,7 +28,13 @@ All of my selections of hyperparameters are following the implementation details
 
 My model is excuted on CUDA. The version of torch is 1.8.1 and torchvision is 0.9.1.
 
-The accuracy on training set could finally reach around 96%. The accuracy test on selected 700 test samples is 97.14%. The loss values and accuracies of all these 300 epochs could be accessed in [notebook].
+The accuracy on training set is more than 97% finally. However, the validation accuracy is slightly lower than 90%. The model is tested on the given test set. The test accuracy is 88.78%. The loss values and accuracies of all these 150 epochs could be accessed in [notebook](https://github.com/NikLi66/simple_implementation_of_densenet/blob/main/Training%26Testing.ipynb).
+
+The plot of training and validation errors is shown as below
+
+![Error plot](image.png)
+
+There is a sharp descent at 75 epoch where the learning rate is changed to 0.01, however, there is no big change at 113 epoch(i.e 75% of the number of total epochs). In addition, the model might be overfitting based on the analysis of this plot. Data augmentation and dropout with higher probability may be potential solutions.
 
 # Discussion
 My implemention still have many issues. The input channel of linear layer(i.e classifier) could not be calculated automatically. This requires setting the size of input image as a parameter of my model and calculate the input channel of classifier in terms of the number of dense blocks. Furthermore, the output channel of the first conv layer is default by double grow rate. This should be set as a parameter of DenseNet model.
