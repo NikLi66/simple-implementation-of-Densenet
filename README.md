@@ -36,5 +36,3 @@ The plot of training and validation errors is shown as below
 
 There is a sharp descent at 75 epoch where the learning rate is changed to 0.01, however, there is no big change at 113 epoch(i.e 75% of the number of total epochs). In addition, the model might be overfitting based on the analysis of this plot. Data augmentation and dropout with higher probability may be potential solutions.
 
-# Discussion
-My implemention still have many issues. The input channel of linear layer(i.e classifier) could not be calculated automatically. This requires setting the size of input image as a parameter of my model and calculate the input channel of classifier in terms of the number of dense blocks. Furthermore, the output channel of the first conv layer is default by double grow rate. This should be set as a parameter of DenseNet model.
