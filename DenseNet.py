@@ -32,10 +32,11 @@ class Network(nn.Module):
     k is the grow rate of DenseNet, theta is the compression coefficient
     dense is a list which contain the depth of each layer
     theta is the coefficient used in compression/transition layer
+    alpha is the output channel coefficient of the first conv layer
     '''
-    def __init__(self, k=12, dense=[16,16,16], theta=0.5):
+    def __init__(self, k=12, dense=[16,16,16], theta=0.5, alpha=2):
         super().__init__()
-        self.Conv = nn.Conv2d(in_channels=3, out_channels=2*k, kernel_size=(3,3), padding=(1,1), bias=False)
+        self.Conv = nn.Conv2d(in_channels=3, out_channels=alpha*k, kernel_size=(3,3), padding=(1,1), bias=False)
         self.Pool = nn.MaxPool2d(kernel_size=(2,2), stride=2)
 
         # Construct Dense Blocks and Transition Layers
@@ -43,48 +44,51 @@ class Network(nn.Module):
         Model = []
         in_channels = 2*k
         for i in range(len(dense)):
-          Model.append(self._make_dense_block(in_channels, k, dense[i]))
+          Model.append(self._DenseBlock(in_channels, k, dense[i]))
           if i < len(dense)-1:
             in_channels += dense[i]*k
             out_channels = int(in_channels*theta)
-            Model.append(self._make_transition_layer(in_channels, out_channels))
+            Model.append(self._TransitionLayer(in_channels, out_channels))
             in_channels = out_channels
         self.model = nn.Sequential(*Model)
         
         # Classifier
         # There is only 1 layer in this classifier.
         self.classifier = nn.Linear(1*1*(out_channels+dense[-1]*k), 10)
-        self.avg_pool = nn.AvgPool2d(kernel_size=4, stride=4, padding=0)
 
-    def _make_dense_block(self, in_channels, k, number_of_layers):
+    def _DenseBlock(self, in_channels, k, number_of_layers):
         layers = []
         for l in range(number_of_layers):
-            layers.append(Bottleneck_Layer(in_channels + l*k, k))
+            layers.append(_Bottleneck(in_channels + l*k, k))
         return nn.Sequential(*layers)
 
-    def _make_transition_layer(self, in_channels, out_channels):
-        modules = []
-        modules.append(Transition_Layer(in_channels, out_channels))
-        return nn.Sequential(*modules)
+    def _TransitionLayer(self, in_channels, out_channels):
+        transition = nn.Sequential(
+            nn.BatchNorm2d(num_features=in_channels),
+            nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=(1, 1), bias=False),
+            nn.Dropout(p=0.2),
+            nn.AvgPool2d(kernel_size=2, stride=2, padding=0)
+        )
+        return transition
 
     def forward(self, x):
         out = self.Conv(x)
         out = self.Pool(out)
         out = self.model(out)
-        out = self.avg_pool(out)
+        out = F.avg_pool1d(out, out.shape[2:], out.shape[2:])
         out = torch.flatten(out, 1)
         out = self.classifier(out)
         return out
 
 
-class Bottleneck_Layer(nn.Module):
+class _Bottleneck(nn.Module):
     """
     Each bottleneck layer consists of BN-ReLU-Conv1*1-BN-ReLU-Conv3*3.
     The Conv1*1 is to improve computation efficiency.
     The number of output channel of Conv1*1 is 4*k, which is followed the original paper.
     """
     def __init__(self, in_channels, k):
-        super(Bottleneck_Layer, self).__init__()
+        super(_Bottleneck, self).__init__()
         self.composite = nn.Sequential(
                 nn.BatchNorm2d(in_channels),
                 nn.ReLU(inplace=True),
@@ -99,26 +103,6 @@ class Bottleneck_Layer(nn.Module):
     def forward(self, x):
         x_1 = self.composite(x)
         output = torch.cat([x, x_1], 1)         # Concatenation of input and output
-        return output
-
-
-class Transition_Layer(nn.Module):
-    """
-    Each transition layer consists of BN-Conv1*1-AvgPool.
-    This is to improve model compactness.
-    The parameter theta is the compression coefficient 
-    """
-    def __init__(self, in_channels, out_channels):
-        super(Transition_Layer, self).__init__()
-        self.transition = nn.Sequential(
-            nn.BatchNorm2d(num_features=in_channels),
-            nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=(1, 1), bias=False),
-            nn.Dropout(p=0.2),
-            nn.AvgPool2d(kernel_size=2, stride=2, padding=0)
-        )
-
-    def forward(self, x):
-        output=self.transition(x)
         return output
 
 
