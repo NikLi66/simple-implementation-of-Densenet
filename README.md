@@ -1,6 +1,6 @@
 # A Simple Implementation of DenseNet in Pytorch
 
-DenseNet is one of the popular CNNs on image classification tasks. More details could be found in the following the paper:
+DenseNet is one of the popular CNNs on image classification tasks. More details could be found in the following paper:
 
 [Densely Connected Convolutional Networks](https://arxiv.org/abs/1608.06993)
 
