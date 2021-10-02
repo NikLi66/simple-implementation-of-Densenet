@@ -42,7 +42,7 @@ class Network(nn.Module):
         # Construct Dense Blocks and Transition Layers
         # Parameter delta is the coefficient of input channels
         Model = []
-        in_channels = 2*k
+        in_channels = alpha*k
         for i in range(len(dense)):
           Model.append(self._DenseBlock(in_channels, k, dense[i]))
           if i < len(dense)-1:
