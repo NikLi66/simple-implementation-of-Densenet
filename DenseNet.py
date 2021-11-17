@@ -34,7 +34,7 @@ class Network(nn.Module):
     theta is the coefficient used in compression/transition layer
     alpha is the output channel coefficient of the first conv layer
     '''
-    def __init__(self, k=12, dense=[16,16,16], theta=0.5, alpha=2):
+    def __init__(self, k=12, dense=[16,16,16], theta=0.5, alpha=2, n_class=10):
         super().__init__()
         self.Conv = nn.Conv2d(in_channels=3, out_channels=alpha*k, kernel_size=(3,3), padding=(1,1), bias=False)
         self.Pool = nn.MaxPool2d(kernel_size=(2,2), stride=2)
@@ -54,7 +54,7 @@ class Network(nn.Module):
         
         # Classifier
         # There is only 1 layer in this classifier.
-        self.classifier = nn.Linear(1*1*(out_channels+dense[-1]*k), 10)
+        self.classifier = nn.Linear(1*1*(out_channels+dense[-1]*k), n_class)
 
     def _DenseBlock(self, in_channels, k, number_of_layers):
         layers = []
@@ -75,7 +75,7 @@ class Network(nn.Module):
         out = self.Conv(x)
         out = self.Pool(out)
         out = self.model(out)
-        out = F.avg_pool1d(out, out.shape[2:], out.shape[2:])
+        out = F.avg_pool1d(out, out.shape[2:])
         out = torch.flatten(out, 1)
         out = self.classifier(out)
         return out
