@@ -114,4 +114,5 @@ lossFunc = nn.CrossEntropyLoss()
 
 batch_size = 64
 epochs = 150
-
+optimizer = optim.SGD(net.parameters(), lr=0.1, momentum=0.9, nesterov=True, weight_decay=1e-4)
+scheduler = optim.lr_scheduler.MultiStepLR(optimizer,[int(0.5*epochs),int(0.75*epochs)],gamma=0.1)
