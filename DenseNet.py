@@ -34,11 +34,11 @@ class Network(nn.Module):
     theta is the coefficient used in compression/transition layer
     alpha is the output channel coefficient of the first conv layer
     '''
-    def __init__(self, k=12, dense=[16,16,16], theta=0.5, alpha=2, n_class=10):
+    def __init__(self, k=12, dense=[16,16,16], theta=0.5, alpha=2, n_class=10, img_shape=224):
         super().__init__()
         self.Conv = nn.Conv2d(in_channels=3, out_channels=alpha*k, kernel_size=(3,3), padding=(1,1), bias=False)
         self.Pool = nn.MaxPool2d(kernel_size=(2,2), stride=2)
-
+        self.img_shape = img_shape//2
         # Construct Dense Blocks and Transition Layers
         # Parameter delta is the coefficient of input channels
         Model = []
@@ -50,10 +50,12 @@ class Network(nn.Module):
             out_channels = int(in_channels*theta)
             Model.append(self._TransitionLayer(in_channels, out_channels))
             in_channels = out_channels
+            self.img_shape //= 2
         self.model = nn.Sequential(*Model)
         
         # Classifier
         # There is only 1 layer in this classifier.
+        self.avgpool = nn.AvgPool2d(kernel_size=self.img_shape, stride=self.img_shape, padding=0)
         self.classifier = nn.Linear(1*1*(out_channels+dense[-1]*k), n_class)
 
     def _DenseBlock(self, in_channels, k, number_of_layers):
@@ -75,7 +77,7 @@ class Network(nn.Module):
         out = self.Conv(x)
         out = self.Pool(out)
         out = self.model(out)
-        out = F.avg_pool1d(out, out.shape[2:])
+        out = self.avgpool(out)
         out = torch.flatten(out, 1)
         out = self.classifier(out)
         return out
